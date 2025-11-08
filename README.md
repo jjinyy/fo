@@ -1,5 +1,5 @@
-팀명 **원투엑**
-팀 구성원 성명 김혜진, 이기현
+### 원투엑
+### 팀 구성원 : 김혜진, 이기현
 
 ### AI 서비스 명칭
 Fair [Opportunity.AI](http://opportunity.ai/)
