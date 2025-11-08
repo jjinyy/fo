@@ -1,0 +1,194 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'app.css' %}">
+
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Fair Opportunity.AI – MVP</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>Fair Opportunity.AI – MVP</h1>
+  <p class="muted">입력 → 진단(FOI/EOI/LOI/FGS) → 추천 → 시뮬레이션</p>
+
+  <div class="grid">
+    <div class="card g-6">
+      <h2>① 기본 정보</h2>
+      <label>지역</label>
+      <select id="region">
+        <option value="KR-11">서울특별시 (KR-11)</option>
+      </select>
+      <label>학력</label>
+      <select id="edu">
+        <option value="HS">고졸</option><option value="AD">전문대졸</option>
+        <option value="BA" selected>대졸</option><option value="MSPHD">석·박사</option>
+      </select>
+      <label>전공/관심</label>
+      <input id="major" placeholder="예: 데이터사이언스"/>
+      <label>희망 직무(NCS/KSCO 코드)</label>
+      <select id="occ">
+        <option value="NCS-01" selected>NCS-01 정보기술개발</option>
+        <option value="NCS-02">NCS-02 기계설계</option>
+        <option value="NCS-03">NCS-03 회계관리</option>
+      </select>
+      <label>희망연봉(만원)</label>
+      <input id="salary" type="number" value="4200"/>
+      <div class="flex">
+        <label><input type="checkbox" id="online_only"/> 온라인만</label>
+        <label><input type="checkbox" id="free_only"/> 무료만</label>
+      </div>
+      <hr/>
+      <button class="btn" id="btnRun">진단 실행</button>
+    </div>
+
+    <div class="card g-6">
+      <h2>② LOI (삶의 지향 설문 / 0~100)</h2>
+      <div class="grid">
+        <div class="g-6"><label>워라밸</label><input id="loi_wlb" type="number" value="70"></div>
+        <div class="g-6"><label>성장</label><input id="loi_growth" type="number" value="80"></div>
+        <div class="g-6"><label>안정</label><input id="loi_sec" type="number" value="65"></div>
+        <div class="g-6"><label>자율</label><input id="loi_auto" type="number" value="75"></div>
+      </div>
+      <label>장기목표</label>
+      <select id="loi_goal">
+        <option value="STABLE">안정</option>
+        <option value="CHANGE">변화</option>
+        <option value="AUTONOMY">자율</option>
+        <option value="ACHIEVE" selected>성취</option>
+      </select>
+      <label>EOI 가중치 (a 임금 / b 안정 / c 성장 / d 삶)</label>
+      <div class="grid">
+        <input class="g-3" id="w_a" type="number" step="0.1" value="0.3">
+        <input class="g-3" id="w_b" type="number" step="0.1" value="0.2">
+        <input class="g-3" id="w_c" type="number" step="0.1" value="0.3">
+        <input class="g-3" id="w_d" type="number" step="0.1" value="0.2">
+      </div>
+      <p class="small muted">합이 1.0 권장</p>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:16px">
+    <div class="card kpi"><div>FOI</div><div class="score" id="kpi_foi">-</div><div class="bar"><span id="bar_foi"></span></div><div class="small muted" id="desc_foi"></div></div>
+    <div class="card kpi"><div>EOI</div><div class="score" id="kpi_eoi">-</div><div class="bar"><span id="bar_eoi"></span></div><div class="small muted" id="desc_eoi"></div></div>
+    <div class="card kpi"><div>LOI</div><div class="score" id="kpi_loi">-</div><div class="bar"><span id="bar_loi"></span></div><div class="small muted" id="desc_loi"></div></div>
+    <div class="card kpi"><div>FGS</div><div class="score" id="kpi_fgs">-</div><div class="bar"><span id="bar_fgs"></span></div><div class="small" id="desc_fgs"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2>AI 해석</h2>
+    <div id="insight" class="muted">-</div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2>추천 기회</h2>
+    <div class="flex muted small">필터: <span class="chip" id="chip_online">온라인 우선</span><span class="chip" id="chip_free">무료 우선</span></div>
+    <div id="recs"></div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2>성장 시뮬레이션</h2>
+    <div class="grid">
+      <div class="g-6"><div class="muted small">현재 FGS</div><div id="fgs_now" class="score">-</div></div>
+      <div class="g-6">
+        <label>목표 FGS</label><input id="fgs_target" type="number" value="70"/>
+        <button class="btn" id="btnPlan">달성 계획 생성</button>
+      </div>
+      <div class="g-12"><div id="plan" class="muted">-</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function fmt(n){return Number(n).toFixed(1)}
+function setKPI(idScore, idBar, val){document.getElementById(idScore).textContent = fmt(val)+"점"; document.getElementById(idBar).style.width = Math.max(0,Math.min(100,val))+"%";}
+function descBand(val,a,b,c,d){if(val>=80)return a; if(val>=60)return b; if(val>=40)return c; return d;}
+
+async function fetchJSON(url){const r=await fetch(url); if(!r.ok) throw new Error(await r.text()); return r.json();}
+
+document.getElementById('btnRun').addEventListener('click', async ()=>{
+  const region = document.getElementById('region').value;
+  const edu = document.getElementById('edu').value;
+  const occ = document.getElementById('occ').value;
+
+  const wlb=+document.getElementById('loi_wlb').value||0;
+  const growth=+document.getElementById('loi_growth').value||0;
+  const sec=+document.getElementById('loi_sec').value||0;
+  const auto=+document.getElementById('loi_auto').value||0;
+  const a=+document.getElementById('w_a').value||0.3;
+  const b=+document.getElementById('w_b').value||0.2;
+  const c=+document.getElementById('w_c').value||0.3;
+  const d=+document.getElementById('w_d').value||0.2;
+
+  // 1) 서버에서 FOI/EOI 가져오기
+  const foi = await fetchJSON(`/api/foi?region=${region}&edu=${edu}&time=2025Q4`);
+  const eoi = await fetchJSON(`/api/eoi?occ=${occ}&time=2025Q4`);
+
+  // 2) LOI 계산
+  const loi = 0.3*wlb + 0.3*growth + 0.2*sec + 0.2*auto;
+  const L = loi;
+
+  // 3) 개인화 EOI
+  const eoiP = a*eoi.W + b*eoi.S + c*eoi.G + d*L;
+
+  // 4) FGS
+  const synergy = (foi.foi_score*eoiP)/100.0;
+  const fgs = 0.25*foi.foi_score + 0.35*eoiP + 0.25*synergy + 0.15*loi;
+
+  // 5) KPI 반영
+  setKPI("kpi_foi","bar_foi",foi.foi_score);
+  setKPI("kpi_eoi","bar_eoi",eoiP);
+  setKPI("kpi_loi","bar_loi",loi);
+  setKPI("kpi_fgs","bar_fgs",fgs);
+
+  document.getElementById('desc_foi').textContent = descBand(foi.foi_score,"기회 풍부","평균 수준","접근성 부족","정보 사각지대 가능");
+  document.getElementById('desc_eoi').textContent = "개인화 반영 EOI";
+  document.getElementById('desc_loi').textContent = "개인 가치 성향 점수";
+  document.getElementById('desc_fgs').textContent = fgs>=70?"전략 유지/고도화 가능":(fgs>=50?"개선 여지":"구조적 제약 큼 – 방향 재설계 필요");
+
+  // 6) 인사이트 (간단 규칙)
+  let tips=[];
+  if(foi.foi_score<65) tips.push("FOI 낮음: 온라인/무료/야간 과정 우선 탐색");
+  if(eoiP<70) tips.push("EOI 낮음: NCS 자격·직무 전환·경력관리");
+  if(loi>=75 && d>=0.2) tips.push("워라밸/자율성 중시 → 원격·자율 직무 우선");
+  if(!tips.length) tips.push("현재 전략 유지, 심화과정/프로젝트로 고도화");
+  document.getElementById('insight').textContent = tips.join(" / ");
+
+  // 7) 추천 카드 (프런트 샘플)
+  const recs = [
+    {t:"디지털 UX 입문", online:true, free:true, tags:["비전공우대","원격","정부지원"], gain:7},
+    {t:"K-디지털 역량훈련(데이터 기초)", online:true, free:true, tags:["온라인","무료","NCS"], gain:5},
+    {t:"청년 직무부트캠프(야간)", online:false, free:false, tags:["야간","부분무료"], gain:4},
+  ];
+  const box = document.getElementById('recs'); box.innerHTML="";
+  recs.forEach(o=>{
+    const div=document.createElement('div'); div.className='rec-card';
+    div.innerHTML = `<div>
+      <div><strong>${o.t}</strong>${o.online?'<span class="pill">온라인</span>':''}${o.free?'<span class="pill">무료</span>':''}</div>
+      <div class="small muted">태그: ${o.tags.map(x=>`#${x}`).join('  ')}</div>
+      <div class="small" style="margin-top:6px;color:var(--primary)">예상 FGS +${o.gain}p</div>
+    </div><div><button class="btn small">상세보기 →</button></div>`;
+    box.appendChild(div);
+  });
+
+  // 8) 시뮬레이터
+  document.getElementById('fgs_now').textContent = fmt(fgs);
+});
+
+document.getElementById('btnPlan').addEventListener('click', ()=>{
+  const now=parseFloat(document.getElementById('fgs_now').textContent||"0");
+  const target=+document.getElementById('fgs_target').value||70;
+  const need=Math.max(0,target-now);
+  const steps=[];
+  if(need===0){document.getElementById('plan').textContent="이미 목표 달성. 심화과정 권장";return;}
+  if(need>0){steps.push("① 온라인 과정 1개(+5p)");}
+  if(need>5){steps.push("② NCS 기초 자격(+4p)");}
+  if(need>9){steps.push("③ 프로젝트/포트폴리오(+3p)");}
+  if(need>12){steps.push("④ 지역 청년 지원사업(+2p)");}
+  document.getElementById('plan').innerHTML=`필요 상승치: <b>${fmt(need)}</b>p<br>${steps.join("<br>")}`;
+});
+</script>
+</body>
+</html>

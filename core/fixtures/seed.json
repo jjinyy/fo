@@ -1,0 +1,29 @@
+[
+  {"model":"core.dimregion","pk":"KR-11","fields":{
+    "region_name":"서울특별시","region_level":"sido","active_flag":true,
+    "updated_at":"2025-11-03T00:00:00Z"
+  }},
+
+  {"model":"core.dimeducation","pk":"HS","fields":{"edu_name":"고졸","order_no":1,"updated_at":"2025-11-03T00:00:00Z"}},
+  {"model":"core.dimeducation","pk":"AD","fields":{"edu_name":"전문대졸","order_no":2,"updated_at":"2025-11-03T00:00:00Z"}},
+  {"model":"core.dimeducation","pk":"BA","fields":{"edu_name":"대졸","order_no":3,"updated_at":"2025-11-03T00:00:00Z"}},
+  {"model":"core.dimeducation","pk":"MSPHD","fields":{"edu_name":"석박사","order_no":4,"updated_at":"2025-11-03T00:00:00Z"}},
+
+  {"model":"core.dimoccupation","pk":"NCS-01","fields":{"occ_name":"정보기술개발","updated_at":"2025-11-03T00:00:00Z"}},
+  {"model":"core.dimoccupation","pk":"NCS-02","fields":{"occ_name":"기계설계","updated_at":"2025-11-03T00:00:00Z"}},
+  {"model":"core.dimoccupation","pk":"NCS-03","fields":{"occ_name":"회계관리","updated_at":"2025-11-03T00:00:00Z"}},
+
+  {"model":"core.dimtime","pk":"2025Q4","fields":{"year":2025,"quarter":4,"month":10,"updated_at":"2025-11-03T00:00:00Z"}},
+
+  {"model":"core.factfoimetrics","pk":1,"fields":{
+    "region":"KR-11","edu":"BA","time":"2025Q4",
+    "foi_score":"84.0","E_employ_norm":"85.2","T_training_norm":"74.6","I_infra_norm":"92.0",
+    "source_version":"v1.0","data_quality_flag":"HIGH","updated_at":"2025-11-03T00:00:00Z"
+  }},
+
+  {"model":"core.facteoimetrics","pk":1,"fields":{
+    "occ":"NCS-01","time":"2025Q4",
+    "eoi_score_base":"85.6","W_wage_norm":"90.1","S_stability_norm":"85.2","G_growth_satis_norm":"80.4",
+    "source_version":"v1.0","data_quality_flag":"HIGH","updated_at":"2025-11-03T00:00:00Z"
+  }}
+]
