@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}목표 관리 - FO.AI{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto mt-10">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">🎯 나의 목표 관리</h1>
+    <a href="{% url 'goal_create' %}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+      + 새 목표 추가
+    </a>
+  </div>
+
+  {% if goals %}
+  <div class="grid grid-cols-1 gap-4">
+    {% for goal in goals %}
+    <div class="bg-white border rounded-xl shadow-sm p-6 hover:shadow-md transition">
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="text-lg font-semibold text-slate-800">{{ goal.title }}</h2>
+        <div class="flex gap-2 text-sm">
+          <a href="{% url 'goal_edit' goal.id %}" class="text-blue-600 hover:underline">수정</a>
+          <a href="{% url 'goal_delete' goal.id %}" class="text-red-600 hover:underline">삭제</a>
+        </div>
+      </div>
+
+      <p class="text-slate-600 mb-3">{{ goal.description|default:"(설명 없음)" }}</p>
+
+      <div class="flex justify-between items-center text-sm text-slate-500">
+        <span>📅 생성일: {{ goal.created_at|date:"Y-m-d" }}</span>
+        {% if goal.completed %}
+          <span class="text-emerald-600 font-medium">✅ 완료됨</span>
+        {% else %}
+          <a href="{% url 'goal_complete' goal.id %}" class="text-blue-600 hover:underline">완료로 표시</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="bg-white border rounded-xl p-6 text-center text-slate-600">
+    등록된 목표가 없습니다.<br>
+    <a href="{% url 'goal_create' %}" class="text-blue-600 hover:underline">새 목표를 추가하세요.</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

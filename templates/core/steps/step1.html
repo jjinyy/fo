@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FO.AI – 1단계 기본정보</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+</head><body class="bg-slate-50 text-slate-900 font-[Inter,'Noto Sans KR']">
+<header class="bg-white border-b border-slate-200">
+  <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
+    <div class="font-extrabold">Fair Opportunity.AI</div>
+    <div class="text-sm text-slate-500">Step 1 / 3</div>
+  </div>
+</header>
+
+<main class="max-w-4xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-extrabold">① 기본 정보</h1>
+  <form method="post" class="mt-4 space-y-4 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+    {% csrf_token %}
+    <div>
+      <label class="text-sm font-semibold">지역</label>
+      <select name="region" class="mt-1 w-full rounded-xl border-slate-300 px-3 py-2">
+        {% for r in regions %}
+        <option value="{{ r.region_id }}" {% if basic.region == r.region_id %}selected{% endif %}>{{ r.region_name }} ({{ r.region_id }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="text-sm font-semibold">학력</label>
+      <select name="edu" class="mt-1 w-full rounded-xl border-slate-300 px-3 py-2">
+        {% for e in edus %}
+        <option value="{{ e.edu_code }}" {% if basic.edu == e.edu_code %}selected{% endif %}>{{ e.edu_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="text-sm font-semibold">전공/관심</label>
+      <input name="major" value="{{ basic.major }}" placeholder="예: 데이터사이언스" class="mt-1 w-full rounded-xl border-slate-300 px-3 py-2"/>
+    </div>
+    <div>
+      <label class="text-sm font-semibold">희망 직무(NCS/KSCO)</label>
+      <select name="occ" class="mt-1 w-full rounded-xl border-slate-300 px-3 py-2">
+        {% for o in occs %}
+        <option value="{{ o.occ_code }}" {% if basic.occ == o.occ_code %}selected{% endif %}>{{ o.occ_code }} {{ o.occ_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="text-sm font-semibold">희망연봉(만원)</label>
+      <input name="salary" type="number" value="{{ basic.salary }}" class="mt-1 w-full rounded-xl border-slate-300 px-3 py-2"/>
+    </div>
+
+    <div class="flex gap-6">
+      <label class="inline-flex items-center gap-2 text-sm"><input type="checkbox" name="online_only" {% if basic.online_only %}checked{% endif %} class="rounded border-slate-300">온라인만</label>
+      <label class="inline-flex items-center gap-2 text-sm"><input type="checkbox" name="free_only" {% if basic.free_only %}checked{% endif %} class="rounded border-slate-300">무료만</label>
+    </div>
+
+    <div class="flex justify-end">
+      <button class="px-5 py-2 rounded-xl bg-blue-600 text-white font-bold">다음 →</button>
+    </div>
+  </form>
+</main>
+</body></html>
+{% endblock %}

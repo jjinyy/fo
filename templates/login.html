@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>로그인 - FO.AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-sm bg-white border rounded-2xl p-6 shadow">
+    <h1 class="text-xl font-extrabold mb-4">FO.AI 로그인</h1>
+    {% if form.errors %}
+      <div class="mb-3 text-sm text-red-600">아이디 또는 비밀번호를 확인해주세요.</div>
+    {% endif %}
+    <form method="post" action="{% url 'login' %}" class="space-y-3">
+      {% csrf_token %}
+      <div>
+        <label class="block text-sm text-slate-600">아이디</label>
+        <input name="username" class="mt-1 w-full border rounded-lg px-3 py-2" autofocus>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-600">비밀번호</label>
+        <input name="password" type="password" class="mt-1 w-full border rounded-lg px-3 py-2">
+      </div>
+      <button class="w-full py-2 rounded-lg bg-slate-900 text-white font-bold">로그인</button>
+      <input type="hidden" name="next" value="{{ next }}">
+    </form>
+    <div class="text-xs text-slate-500 mt-4">
+      테스트용 계정이 없다면 관리자에게 요청하거나 <a href="/admin" class="underline">/admin</a>에서 계정을 만드세요.
+    </div>
+  </div>
+</body>
+</html>

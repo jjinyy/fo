@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}FO.AI{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  {% block head %}{% endblock %}
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <!-- 상단 바 -->
+  <header class="bg-white border-b">
+    <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="{% url 'dashboard' %}" class="font-extrabold">FO.AI</a>
+
+      <nav class="flex items-center gap-5 text-sm">
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard' %}" class="hover:underline">대시보드</a>
+          <a href="{% url 'step1' %}" class="hover:underline">진단</a>
+          <a href="{% url 'goal_list' %}" class="hover:underline">목표</a>
+          <a href="{% url 'recommend' %}" class="hover:underline">추천</a>
+          {% if user.is_staff %}
+            <a href="{% url 'policy_dashboard' %}" class="text-amber-700 hover:underline">정책</a>
+          {% endif %}
+          <span class="text-slate-400">|</span>
+          <span class="text-slate-600">{{ user.username }}</span>
+          <a href="{% url 'logout' %}" class="text-slate-600 hover:underline">로그아웃</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="hover:underline">로그인</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <!-- 본문 -->
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}FO.AI 대시보드{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto mt-10">
+  <h1 class="text-2xl font-bold mb-4">FO.AI 대시보드</h1>
+
+  {% if last %}
+  <div class="bg-white border rounded-xl p-6 shadow-sm mb-6">
+    <h2 class="text-lg font-semibold mb-3">최근 진단 결과</h2>
+    <div class="grid grid-cols-4 text-center text-sm text-slate-700">
+      <div>
+        <p class="font-bold text-xl text-blue-600">{{ last.foi|floatformat:1 }}</p>
+        <p>FOI</p>
+      </div>
+      <div>
+        <p class="font-bold text-xl text-emerald-600">{{ last.eoi|floatformat:1 }}</p>
+        <p>EOI</p>
+      </div>
+      <div>
+        <p class="font-bold text-xl text-amber-600">{{ last.loi|floatformat:1 }}</p>
+        <p>LOI</p>
+      </div>
+      <div>
+        <p class="font-bold text-xl text-violet-600">{{ last.fgs|floatformat:1 }}</p>
+        <p>FGS</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-between mb-8">
+    <a href="{% url 'step1' %}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+      다시 진단하기
+    </a>
+    <a href="{% url 'goal_list' %}" class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition">
+      내 목표 보기
+    </a>
+  </div>
+
+  <h2 class="text-lg font-semibold mb-3">획득한 배지</h2>
+  <div class="flex flex-wrap gap-3">
+    {% for b in badges %}
+      <div class="px-4 py-2 border rounded-full text-sm text-slate-600 bg-slate-50">
+        🏅 {{ b }}
+      </div>
+    {% empty %}
+      <p class="text-slate-500">아직 배지가 없습니다.</p>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="bg-white border rounded-xl p-6 text-center text-slate-600">
+    저장된 진단이 없습니다.<br>
+    <a href="{% url 'step1' %}" class="text-blue-600 hover:underline">첫 진단을 시작하세요.</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

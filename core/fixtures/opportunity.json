@@ -1,0 +1,4 @@
+[
+  {"model":"core.opportunity","pk":1,"fields":{"title":"K-디지털 트레이닝(온라인)","region":"KR-11","link":"https://www.hrd.go.kr","category":"훈련","description":"청년 대상 데이터/AI 입문과정"}},
+  {"model":"core.opportunity","pk":2,"fields":{"title":"서울청년포털: 취업 멘토링","region":"KR-11","link":"https://youth.seoul.go.kr","category":"상담","description":"직무별 1:1 멘토링 프로그램"}}
+]

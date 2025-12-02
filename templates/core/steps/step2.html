@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FO.AI – 2단계 LOI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+</head><body class="bg-slate-50 text-slate-900 font-[Inter,'Noto Sans KR']">
+<header class="bg-white border-b border-slate-200">
+  <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
+    <div class="font-extrabold">Fair Opportunity.AI</div>
+    <div class="text-sm text-slate-500">Step 2 / 3</div>
+  </div>
+</header>
+
+<main class="max-w-4xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-extrabold">② LOI (삶의 지향 설문)</h1>
+  <form method="post" class="mt-4 space-y-4 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+    {% csrf_token %}
+    <div class="grid grid-cols-2 gap-4">
+      <label class="text-sm font-semibold">워라밸
+        <input name="loi_wlb" type="number" value="{{ loi.wlb|default:70 }}" class="mt-1 w-full rounded-xl border-slate-300 px-3 py-2">
+      </label>
+      <label class="text-sm font-semibold">성장
+        <input name="loi_growth" type="number" value="{{ loi.growth|default:80 }}" class="mt-1 w-full rounded-xl border-slate-300 px-3 py-2">
+      </label>
+      <label class="text-sm font-semibold">안정
+        <input name="loi_sec" type="number" value="{{ loi.sec|default:65 }}" class="mt-1 w-full rounded-xl border-slate-300 px-3 py-2">
+      </label>
+      <label class="text-sm font-semibold">자율
+        <input name="loi_auto" type="number" value="{{ loi.auto|default:75 }}" class="mt-1 w-full rounded-xl border-slate-300 px-3 py-2">
+      </label>
+    </div>
+
+    <label class="text-sm font-semibold block">장기목표
+      <select name="loi_goal" class="mt-1 w-full rounded-xl border-slate-300 px-3 py-2">
+        <option value="STABLE" {% if loi.goal == "STABLE" %}selected{% endif %}>안정</option>
+        <option value="CHANGE" {% if loi.goal == "CHANGE" %}selected{% endif %}>변화</option>
+        <option value="AUTONOMY" {% if loi.goal == "AUTONOMY" %}selected{% endif %}>자율</option>
+        <option value="ACHIEVE" {% if loi.goal == "ACHIEVE" or not loi.goal %}selected{% endif %}>성취</option>
+      </select>
+    </label>
+
+    <div>
+      <div class="text-sm font-semibold mb-1">EOI 가중치 (합계 1.0 권장)</div>
+      <div class="grid grid-cols-4 gap-3">
+        <input name="w_a" type="number" step="0.1" value="{{ loi.wa|default:0.3 }}" class="rounded-xl border-slate-300 px-3 py-2">
+        <input name="w_b" type="number" step="0.1" value="{{ loi.wb|default:0.2 }}" class="rounded-xl border-slate-300 px-3 py-2">
+        <input name="w_c" type="number" step="0.1" value="{{ loi.wc|default:0.3 }}" class="rounded-xl border-slate-300 px-3 py-2">
+        <input name="w_d" type="number" step="0.1" value="{{ loi.wd|default:0.2 }}" class="rounded-xl border-slate-300 px-3 py-2">
+      </div>
+    </div>
+
+    <div class="flex justify-between">
+      <a href="{% url 'step1' %}" class="px-5 py-2 rounded-xl border border-slate-300">← 이전</a>
+      <button class="px-5 py-2 rounded-xl bg-blue-600 text-white font-bold">다음 →</button>
+    </div>
+  </form>
+</main>
+</body></html>
+{% endblock %}

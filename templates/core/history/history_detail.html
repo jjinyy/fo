@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>이력 상세 - FO.AI</title>
+<script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-slate-50">
+<div class="max-w-3xl mx-auto px-4 py-6">
+  <a class="text-sm text-blue-600" href="{% url 'history' %}">← 이력으로</a>
+  <h1 class="text-xl font-extrabold mt-2">이력 상세 ({{ item.created_at|date:"Y-m-d H:i" }})</h1>
+  <div class="grid md:grid-cols-4 gap-3 mt-3">
+    <div class="bg-white p-4 border rounded-xl">FOI <div class="text-2xl font-extrabold">{{ item.foi }}</div></div>
+    <div class="bg-white p-4 border rounded-xl">EOI <div class="text-2xl font-extrabold">{{ item.eoi_personal }}</div></div>
+    <div class="bg-white p-4 border rounded-xl">LOI <div class="text-2xl font-extrabold">{{ item.loi_score }}</div></div>
+    <div class="bg-white p-4 border rounded-xl">FGS <div class="text-2xl font-extrabold">{{ item.fgs }}</div></div>
+  </div>
+
+  <div class="bg-white p-4 border rounded-xl mt-4">
+    <div class="font-bold mb-1">입력 스냅샷</div>
+    <pre class="text-xs text-slate-700 overflow-x-auto">{{ item.basic_json|json_script:"basic" }}</pre>
+    <pre class="text-xs text-slate-700 overflow-x-auto mt-2">{{ item.loi_json|json_script:"loi" }}</pre>
+  </div>
+</div>
+</body></html>
+{% endblock %}

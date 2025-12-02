@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 class DimRegion(models.Model):
     region_id = models.CharField(primary_key=True, max_length=16)
@@ -61,3 +62,51 @@ class FactEoiMetrics(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
         unique_together = ('occ','time')
+
+class Assessment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="assessments")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # 입력 스냅샷 (간단히 텍스트/JSON)
+    basic_json = models.JSONField(default=dict)  # region/edu/occ/salary/online_only/free_only
+    loi_json   = models.JSONField(default=dict)  # wlb/growth/sec/auto/goal/wa/wb/wc/wd
+
+    # 결과 스냅샷
+    foi = models.FloatField(default=0)
+    eoi_personal = models.FloatField(default=0)
+    loi_score = models.FloatField(default=0)
+    fgs = models.FloatField(default=0)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+class Goal(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="goals")
+    title = models.CharField(max_length=200)
+    target_fgs = models.FloatField()
+    start_fgs = models.FloatField(default=0)
+    due_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_completed = models.BooleanField(default=False)
+
+    def progress(self):
+        last = self.user.assessments.first()
+        if not last:
+            return 0
+        delta = last.fgs - self.start_fgs
+        total = self.target_fgs - self.start_fgs
+        return max(0, min(100, (delta / total) * 100)) if total > 0 else 0
+
+class Opportunity(models.Model):
+    title = models.CharField(max_length=200)
+    region = models.CharField(max_length=50)   # 예: KR-11
+    link = models.URLField()
+    category = models.CharField(max_length=100, blank=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)  # ← 추가
+
+
+class Badge(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="badges")
+    name = models.CharField(max_length=100)
+    awarded_at = models.DateTimeField(auto_now_add=True)

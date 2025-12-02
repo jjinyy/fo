@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-5xl mx-auto mt-8">
+  <h1 class="text-xl font-bold mb-4">추천 기회</h1>
+  <div class="grid md:grid-cols-2 gap-4">
+    {% for r in recs %}
+      <a href="{{ r.link }}" target="_blank" class="block bg-white border rounded-lg p-4 hover:shadow">
+        <div class="font-bold">{{ r.title }}</div>
+        <div class="text-sm text-slate-500">{{ r.category }}</div>
+        <p class="text-sm mt-1">{{ r.description|truncatechars:120 }}</p>
+      </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

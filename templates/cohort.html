@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}cohort{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto mt-8">
+  <h1 class="text-xl font-bold mb-4">지역별 평균 FGS</h1>
+  <table class="min-w-full bg-white border">
+    <thead><tr><th class="border px-4 py-2">지역</th><th class="border px-4 py-2">평균 FGS</th></tr></thead>
+    <tbody>
+    {% for r in avg_fgs %}
+      <tr><td class="border px-4 py-2">{{ r.basic_json__region }}</td><td class="border px-4 py-2">{{ r.avg_fgs|floatformat:1 }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
